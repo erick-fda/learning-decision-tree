@@ -48,6 +48,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="test-titanic-fatalities.data">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="train-titanic-fatalities.data">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
