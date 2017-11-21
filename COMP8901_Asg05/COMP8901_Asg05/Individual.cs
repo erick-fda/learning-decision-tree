@@ -44,9 +44,9 @@ namespace COMP8901_Asg05
             Constructors & Destructors
         ------------------------------------------------------------------------------------*/
         /**
-            Default Individual constructor.
+            Individual constructor taking parameters for name and classification.
         */
-        public Individual(string newName = "", string newClassification = "")
+        public Individual(string newName, string newClassification)
         {
             _name = newName;
             _classification = newClassification;

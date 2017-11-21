@@ -169,7 +169,7 @@ namespace COMP8901_Asg05
                     /* Add the individual to the return list. */
                     eachIndividual._attributes = eachIndividualAttributes;
                     individuals.Add(eachIndividual);
-                    SysConsole.Write(eachIndividual + "\n");
+                    //SysConsole.Write(eachIndividual + "\n");
                     dataCount--;
                     continue;
                 }

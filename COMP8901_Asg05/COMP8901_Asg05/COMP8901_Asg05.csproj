@@ -42,6 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DecisionTree.cs" />
+    <Compile Include="DecisionTreeNode.cs" />
     <Compile Include="FileReader.cs" />
     <Compile Include="Individual.cs" />
     <Compile Include="Program.cs" />

@@ -44,6 +44,7 @@ namespace COMP8901_Asg05
         public static SysGeneric.Dictionary<string, SysGeneric.List<string>> _attributeValues { get; set; }
         private static SysGeneric.List<Individual> _trainingData { get; set; }
         private static SysGeneric.List<Individual> _testData { get; set; }
+        private static DecisionTree _learnedTree { get; set; }
 
         /*--------------------------------------------------------------------------------
             Main Method
@@ -58,7 +59,7 @@ namespace COMP8901_Asg05
                 return;
             }
 
-            BuildDecisionTree();
+            BuildDecisionTree(_trainingData);
 
             SysConsole.Write("Press any key to exit...");
             SysConsole.ReadKey();
@@ -94,7 +95,7 @@ namespace COMP8901_Asg05
             /* Get the data from the training and test files. */
             SysConsole.Write(System.String.Format("{0}\n\tReading Training File\n{0}\n", FileReader.HORIZONTAL_RULE));
             _trainingData = FileReader.ReadDataFile(_trainingFilePath);
-            SysConsole.Write(System.String.Format("{0}\n\tReading Test File\n{0}\n", FileReader.HORIZONTAL_RULE));
+            SysConsole.Write(System.String.Format("{0}\n\tReading Testing File\n{0}\n", FileReader.HORIZONTAL_RULE));
             _testData = FileReader.ReadDataFile(_testFilePath);
 
             return 0;
@@ -106,7 +107,13 @@ namespace COMP8901_Asg05
         */
         private static void BuildDecisionTree(SysGeneric.List<Individual> root)
         {
+            SysConsole.Write(System.String.Format("{0}\n\tBuilding Decision Tree\n{0}\n", FileReader.HORIZONTAL_RULE));
 
+            /* Initialize the learned tree with the given node. */
+            DecisionTreeNode rootNode = new DecisionTreeNode(root);
+            _learnedTree = new DecisionTree(rootNode);
+
+            SysConsole.Write(System.String.Format("The entropy of the root node is {0}.\n\n", _learnedTree._root._entropy));
         }
     }
 }
