@@ -58,6 +58,8 @@ namespace COMP8901_Asg05
                 return;
             }
 
+            BuildDecisionTree();
+
             SysConsole.Write("Press any key to exit...");
             SysConsole.ReadKey();
         }
@@ -96,6 +98,15 @@ namespace COMP8901_Asg05
             _testData = FileReader.ReadDataFile(_testFilePath);
 
             return 0;
+        }
+
+        /**
+            Builds an ID3-optimized decision tree using the given collection of 
+            individuals as the root node.
+        */
+        private static void BuildDecisionTree(SysGeneric.List<Individual> root)
+        {
+
         }
     }
 }
