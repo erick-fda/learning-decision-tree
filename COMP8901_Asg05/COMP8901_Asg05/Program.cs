@@ -40,7 +40,10 @@ namespace COMP8901_Asg05
         private static string _trainingFilePath { get; set; }
         private static string _testFilePath { get; set; }
         public static SysGeneric.List<string> _classifications { get; set; }
-        public static SysGeneric.Dictionary<string, SysGeneric.List<string>> _attributes { get; set; }
+        public static SysGeneric.List<string> _attributes { get; set; }
+        public static SysGeneric.Dictionary<string, SysGeneric.List<string>> _attributeValues { get; set; }
+        private static SysGeneric.List<Individual> _trainingData { get; set; }
+        private static SysGeneric.List<Individual> _testData { get; set; }
 
         /*--------------------------------------------------------------------------------
             Main Method
@@ -48,7 +51,12 @@ namespace COMP8901_Asg05
         static void Main(string[] args)
         {
             Init();
-            ReadArgs(args);
+
+            if (ReadArgs(args) > 0)
+            {
+                SysConsole.Write("ERROR: Error parsing arguments.\n\n");
+                return;
+            }
 
             SysConsole.Write("Press any key to exit...");
             SysConsole.ReadKey();
@@ -63,25 +71,31 @@ namespace COMP8901_Asg05
         private static void Init()
         {
             _classifications = new SysGeneric.List<string>();
-            _attributes = new SysGeneric.Dictionary<string, SysGeneric.List<string>>();
+            _attributes = new SysGeneric.List<string>();
+            _attributeValues = new SysGeneric.Dictionary<string, SysGeneric.List<string>>();
         }
 
         /**
             Parses the arguments to the program.
         */
-        private static void ReadArgs(string[] args)
+        private static int ReadArgs(string[] args)
         {
             if (args.Length < 2)
             {
                 SysConsole.Write("ERROR: Not enough arguments.\n\n");
+                return 1;
             }
 
             _trainingFilePath = args[0];
             _testFilePath = args[1];
 
-            /* Get test data from training file. */
-            SysConsole.Write("Reading training file...\n\n");
-            FileReader.ReadDataFile(_trainingFilePath);
+            /* Get the data from the training and test files. */
+            SysConsole.Write(System.String.Format("{0}\n\tReading Training File\n{0}\n", FileReader.HORIZONTAL_RULE));
+            _trainingData = FileReader.ReadDataFile(_trainingFilePath);
+            SysConsole.Write(System.String.Format("{0}\n\tReading Test File\n{0}\n", FileReader.HORIZONTAL_RULE));
+            _testData = FileReader.ReadDataFile(_testFilePath);
+
+            return 0;
         }
     }
 }
