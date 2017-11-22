@@ -19,6 +19,16 @@
 using SysGeneric = System.Collections.Generic;
 
 /*========================================================================================
+	Dependencies
+========================================================================================*/
+public enum DtnSplitResult
+{
+    Split,
+    ReachedLeafNode, 
+    CouldNotSplit
+}
+
+/*========================================================================================
     DecisionTreeNode
 ========================================================================================*/
 /**
@@ -277,6 +287,32 @@ namespace COMP8901_Asg05
             _childrenSplitCondition = splitCondition;
             positiveChild._pastSplitConditions.Add(splitCondition, positiveSplitValue);
             negativeChild._pastSplitConditions.Add(splitCondition, COMP8901_Asg05._attributeValues[splitCondition][1]);
+        }
+
+        /**
+            Determine the most utile attribute to split this node on and split it on that attribute.
+            Returns a DecisionTreeNodeSplitResult indicating the result of the split attempt.
+        */
+        public DtnSplitResult SplitOnBestAttribute()
+        {
+            /* If all attributes have already been split on, this is a leaf node. */
+            if ( _pastSplitConditions.Count >= COMP8901_Asg05._attributes.Count )
+            {
+                return DtnSplitResult.ReachedLeafNode;
+            }
+
+            /* If the entropy of this node is zero, it is a leaf node. */
+            if ( _entropy <= 0 )
+            {
+                return DtnSplitResult.ReachedLeafNode;
+            }
+
+            /* Determine the best attribute to split on. */
+            string bestAttribute = DetermineBestSplitCondition();
+
+            /* Split on the best attribute. */
+            SplitOnAttribute(bestAttribute);
+            return DtnSplitResult.Split;
         }
     }
 }

@@ -68,6 +68,12 @@ namespace COMP8901_Asg05
         /*------------------------------------------------------------------------------------
             Instance Methods
         ------------------------------------------------------------------------------------*/
+        /**
+            Generate the optimal decision tree based on the root node.
+        */
+        public void GenerateOptimalTree()
+        {
 
+        }
     }
 }
