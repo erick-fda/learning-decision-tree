@@ -104,6 +104,7 @@ namespace COMP8901_Asg05
                     if ( currentNode._classificationRatio < 0 )
                     {
                         classification = COMP8901_Asg05._commonClassification;
+                        //classification = "unclassified";
                     }
                     /* If there were matching samples, classify based on that. */
                     else
@@ -131,7 +132,7 @@ namespace COMP8901_Asg05
                 }
             }
 
-            if ( classification != null )
+            if (classification != null)
             {
                 return classification;
             }

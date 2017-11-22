@@ -165,20 +165,22 @@ namespace COMP8901_Asg05
             }
 
             SysConsole.Write(System.String.Format(
-                "The total number of classification errors was {0}.\n\n",
+                "The total number of classification errors in the test set was {0}.\n\n",
                 _errorList.Count));
 
             SysConsole.Write(System.String.Format(
                 "The error rate was {0}.\n\n",
                 (double) _errorList.Count / _testData.Count));
 
-            SysConsole.Write("Error Cases: \nIndividual\tIncorrect Classification\tCorrect Classification\n");
+            SysConsole.Write("Error Cases:\n");
+            //SysConsole.Write("Error Cases: \nIndividual\tIncorrect Classification\tCorrect Classification\n");
 
             foreach (Individual eachIndividual in _errorList)
             {
-                SysConsole.Write(System.String.Format(
-                    "{0}\t\t{1}\t\t{2}\n",
-                    eachIndividual._name, eachIndividual._predictedClassification, eachIndividual._classification));
+                SysConsole.Write(eachIndividual._name + "\n");
+                //SysConsole.Write(System.String.Format(
+                //    "{0}\t\t{1}\t\t{2}\n",
+                //    eachIndividual._name, eachIndividual._predictedClassification, eachIndividual._classification));
             }
         }
     }
