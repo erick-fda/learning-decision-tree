@@ -63,10 +63,10 @@ namespace COMP8901_Asg05
         */
         public DecisionTreeNode(SysGeneric.List<Individual> newIndividuals = null)
         {
-            _individuals = newIndividuals;
+            _individuals = ( newIndividuals == null ) ? new SysGeneric.List<Individual>() : newIndividuals;
             _tree = null;
             _parent = null;
-            _children = null;
+            _children = new SysGeneric.List<DecisionTreeNode>();
             _pastSplitConditions = new SysGeneric.Dictionary<string, string>();
             _childrenSplitCondition = "";
         }
@@ -83,7 +83,7 @@ namespace COMP8901_Asg05
         {
             child._tree = _tree;
             child._parent = this;
-            child._pastSplitConditions = this._pastSplitConditions;
+            child._pastSplitConditions = new SysGeneric.Dictionary<string, string>(this._pastSplitConditions);
 
             if (addToTree)
             {
@@ -110,7 +110,7 @@ namespace COMP8901_Asg05
 
             foreach (Individual eachIndividual in collection)
             {
-                if (eachIndividual._classification == COMP8901_Asg05._classifications[0])
+                if ( eachIndividual._classification.Equals(COMP8901_Asg05._classifications[0]) )
                 {
                     nPositive++;
                 }
@@ -165,7 +165,7 @@ namespace COMP8901_Asg05
 
             foreach (Individual eachIndividual in _individuals)
             {
-                if (eachIndividual._attributes[splitCondition] == positiveSplitValue)
+                if ( eachIndividual._attributes[splitCondition].Equals(positiveSplitValue) )
                 {
                     positives.Add(eachIndividual);
                 }
@@ -222,7 +222,7 @@ namespace COMP8901_Asg05
                 }
             }
             
-            if (bestAttribute != null)
+            if ( bestAttribute != null )
             {
                 return bestAttribute;
             }
@@ -230,6 +230,53 @@ namespace COMP8901_Asg05
             {
                 throw new System.Exception("Could not determine a best split attribute.");
             }
+        }
+
+        /**
+            Split this node on the given attribute if it has not already been split on that attribute.
+        */
+        public void SplitOnAttribute(string splitCondition)
+        {
+            /* Throw exception if the given attribute doesn't exist. */
+            if ( !COMP8901_Asg05._attributes.Contains(splitCondition) )
+            {
+                throw new System.ArgumentException(
+                    System.String.Format("\"{0}\" is not a valid attribute.", splitCondition));
+            }
+
+            /* Throw exception if the current branch of the tree has already been split on the given attribute. */
+            if ( _pastSplitConditions.ContainsKey(splitCondition) )
+            {
+                throw new System.ArgumentException(
+                    System.String.Format("This branch of the tree has already been split on attribute \"{0}\".", splitCondition));
+            }
+
+            /* Initialize the new child nodes. */
+            DecisionTreeNode positiveChild = new DecisionTreeNode();
+            DecisionTreeNode negativeChild = new DecisionTreeNode();
+            SetChild(positiveChild, true);
+            SetChild(negativeChild, true);
+
+            /* Set the child nodes' individuals. */
+            string positiveSplitValue = COMP8901_Asg05._attributeValues[splitCondition][0];
+
+            foreach ( Individual eachIndividual in _individuals )
+            {
+                if ( eachIndividual._attributes[splitCondition].Equals(positiveSplitValue) )
+                {
+                    positiveChild._individuals.Add(eachIndividual);
+                }
+                else
+                {
+                    negativeChild._individuals.Add(eachIndividual);
+                }
+            }
+
+            /* Update split conditions for nodes and tree. */
+            _tree._splitConditions.Add(splitCondition);
+            _childrenSplitCondition = splitCondition;
+            positiveChild._pastSplitConditions.Add(splitCondition, positiveSplitValue);
+            negativeChild._pastSplitConditions.Add(splitCondition, COMP8901_Asg05._attributeValues[splitCondition][1]);
         }
     }
 }

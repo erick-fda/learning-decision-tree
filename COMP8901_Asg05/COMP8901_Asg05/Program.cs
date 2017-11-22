@@ -115,6 +115,18 @@ namespace COMP8901_Asg05
                 "The expected information gain from splitting on {0} is {1}.\n\n",
                 bestSplitAttribute,
                 _learnedTree._root.ExpectedUtilityFromSplit(bestSplitAttribute)));
+            SysConsole.Write(System.String.Format(
+                "The tree's root node currently has {0} children.\n\n",
+                _learnedTree._root._children.Count));
+            SysConsole.Write(System.String.Format(
+                "Splitting the tree's root node on attribute \"{0}\"...\n\n",
+                bestSplitAttribute));
+
+            _learnedTree._root.SplitOnAttribute(bestSplitAttribute);
+
+            SysConsole.Write(System.String.Format(
+                "The tree's root node currently has {0} children.\n\n",
+                _learnedTree._root._children.Count));
 
             /*  */
         }
