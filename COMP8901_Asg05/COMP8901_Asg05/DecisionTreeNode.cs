@@ -51,9 +51,9 @@ namespace COMP8901_Asg05
         public DecisionTree _tree { get; set; }
         public DecisionTreeNode _parent { get; set; }
         public SysGeneric.List<DecisionTreeNode> _children { get; set; }
-        public SysGeneric.KeyValuePair<string, string> _parentSplitCondition { get; set; }
         public string _childrenSplitCondition { get; set; }
         public double _entropy { get; private set; }
+        public SysGeneric.Dictionary<string, string> _pastSplitConditions { get; set; }
 
         /*------------------------------------------------------------------------------------
             Constructors & Destructors
@@ -67,7 +67,7 @@ namespace COMP8901_Asg05
             _tree = null;
             _parent = null;
             _children = null;
-            _parentSplitCondition = new SysGeneric.KeyValuePair<string, string>("", "");
+            _pastSplitConditions = new SysGeneric.Dictionary<string, string>();
             _childrenSplitCondition = "";
         }
 
@@ -75,26 +75,30 @@ namespace COMP8901_Asg05
             Instance Methods
         ------------------------------------------------------------------------------------*/
         /**
-            Adds the given DecisionTreeNode as a child of this one.
+            Sets the given DecisionTreeNode as a child of this one.
+            If addToTree is true, the parameter node will be added to this node's list of 
+            children.
         */
-        public void AddChild(DecisionTreeNode child)
+        public void SetChild(DecisionTreeNode child, bool addToTree)
         {
             child._tree = _tree;
             child._parent = this;
-            child._parentSplitCondition = new SysGeneric.KeyValuePair<string, string>(_childrenSplitCondition, "");
+            child._pastSplitConditions = this._pastSplitConditions;
+
+            if (addToTree)
+            {
+                this._children.Add(child);
+            }
         }
 
         /**
-            Returns the entropy of the collection of individuals contained by this node.
-            
-            This method should be used to update the entropy of the node every time the 
-            collection of individuals changes.
+            Returns the entropy of the given list of individuals.
         */
-        private double CalculateEntropy()
+        private static double CalculateEntropy(SysGeneric.List<Individual> collection)
         {
             /* If the collection has no members or is null, entropy is zero. */
-            if (_individuals.Count < 1 || 
-                _individuals == null)
+            if (collection.Count < 1 ||
+                collection == null)
             {
                 return 0;
             }
@@ -104,7 +108,7 @@ namespace COMP8901_Asg05
             int nPositive = 0;
             int nNegative = 0;
 
-            foreach (Individual eachIndividual in _individuals)
+            foreach (Individual eachIndividual in collection)
             {
                 if (eachIndividual._classification == COMP8901_Asg05._classifications[0])
                 {
@@ -120,15 +124,112 @@ namespace COMP8901_Asg05
         }
 
         /**
+            Returns the entropy of the list of individuals contained by this node.
+
+            This method should be used to update the entropy of the node every time the 
+            collection of individuals changes.
+        */
+        private double CalculateEntropy()
+        {
+            return CalculateEntropy(_individuals);
+        }
+
+        /**
             Return the result of an entropy calculation on the given n+ and n- values.
         */
-        private double Entropy(double nPositive, double nNegative)
+        private static double Entropy(double nPositive, double nNegative)
         {
             double n = nPositive + nNegative;
             double nPosN = nPositive / n;
             double nNegN = nNegative / n;
 
             return (-System.Math.Log(nPosN, 2) * nPosN) - (System.Math.Log(nNegN, 2) * nNegN);
+        }
+
+        /**
+            Calculate the average entropy of the child nodes that would result from splitting 
+            this node on the given attribute.
+        */
+        public double ExpectedEntropyFromSplit(string splitCondition)
+        {
+            if (!COMP8901_Asg05._attributes.Contains(splitCondition))
+            {
+                throw new System.ArgumentException(
+                    System.String.Format("{0} is not a valid attribute.", splitCondition));
+            }
+
+            /* Split this node's individual's on the given trait. */
+            SysGeneric.List<Individual> positives = new SysGeneric.List<Individual>();
+            SysGeneric.List<Individual> negatives = new SysGeneric.List<Individual>();
+            string positiveSplitValue = COMP8901_Asg05._attributeValues[splitCondition][0];
+
+            foreach (Individual eachIndividual in _individuals)
+            {
+                if (eachIndividual._attributes[splitCondition] == positiveSplitValue)
+                {
+                    positives.Add(eachIndividual);
+                }
+                else
+                {
+                    negatives.Add(eachIndividual);
+                }
+            }
+
+            /* Calculate the weighted entropy for the result sets. */
+            double entropy = CalculateEntropy(positives) * positives.Count / _individuals.Count;
+            entropy += CalculateEntropy(negatives) * negatives.Count / _individuals.Count;
+            return entropy;
+        }
+
+        /**
+            Calculate the information gain that would result from splitting this node on 
+            the given attribute.
+        */
+        public double ExpectedUtilityFromSplit(string splitCondition)
+        {
+            return _entropy - ExpectedEntropyFromSplit(splitCondition);
+        }
+
+        /**
+            Returns the optimal next attribute to split this node on.
+        */
+        public string DetermineBestSplitCondition()
+        {
+            /* Only consider attributes that have not already been split on. */
+            SysGeneric.List<string> attributesToTest = new SysGeneric.List<string>();
+
+            foreach (string eachAttribute in COMP8901_Asg05._attributes)
+            {
+                if (!_pastSplitConditions.ContainsKey(eachAttribute))
+                {
+                    attributesToTest.Add(eachAttribute);
+                }
+            }
+
+            /* Calculate the information gain of splitting on each attribute 
+                and keep the best one. */
+            string bestAttribute = null;
+            double bestAttributeUtility = 0;
+
+            foreach (string eachAttribute in attributesToTest)
+            {
+                double eachUtility = ExpectedUtilityFromSplit(eachAttribute);
+
+                if (eachUtility > bestAttributeUtility)
+                {
+                    bestAttribute = eachAttribute;
+                    bestAttributeUtility = eachUtility;
+                }
+            }
+            
+            if (bestAttribute != null)
+            {
+                return bestAttribute;
+            }
+            else
+            {
+                throw new System.Exception("Could not determine a best split attribute.");
+            }
         }
     }
 }

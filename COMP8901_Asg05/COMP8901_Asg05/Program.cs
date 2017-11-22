@@ -52,13 +52,7 @@ namespace COMP8901_Asg05
         static void Main(string[] args)
         {
             Init();
-
-            if (ReadArgs(args) > 0)
-            {
-                SysConsole.Write("ERROR: Error parsing arguments.\n\n");
-                return;
-            }
-
+            ReadArgs(args);
             BuildDecisionTree(_trainingData);
 
             SysConsole.Write("Press any key to exit...");
@@ -81,12 +75,11 @@ namespace COMP8901_Asg05
         /**
             Parses the arguments to the program.
         */
-        private static int ReadArgs(string[] args)
+        private static void ReadArgs(string[] args)
         {
             if (args.Length < 2)
             {
-                SysConsole.Write("ERROR: Not enough arguments.\n\n");
-                return 1;
+                throw new System.ArgumentException("ERROR: Not enough arguments.");
             }
 
             _trainingFilePath = args[0];
@@ -97,8 +90,6 @@ namespace COMP8901_Asg05
             _trainingData = FileReader.ReadDataFile(_trainingFilePath);
             SysConsole.Write(System.String.Format("{0}\n\tReading Testing File\n{0}\n", FileReader.HORIZONTAL_RULE));
             _testData = FileReader.ReadDataFile(_testFilePath);
-
-            return 0;
         }
 
         /**
@@ -114,6 +105,18 @@ namespace COMP8901_Asg05
             _learnedTree = new DecisionTree(rootNode);
 
             SysConsole.Write(System.String.Format("The entropy of the root node is {0}.\n\n", _learnedTree._root._entropy));
+
+            string bestSplitAttribute = _learnedTree._root.DetermineBestSplitCondition();
+
+            SysConsole.Write(System.String.Format(
+                "The best attribute to split on first is {0}.\n\n", 
+                bestSplitAttribute));
+            SysConsole.Write(System.String.Format(
+                "The expected information gain from splitting on {0} is {1}.\n\n",
+                bestSplitAttribute,
+                _learnedTree._root.ExpectedUtilityFromSplit(bestSplitAttribute)));
+
+            /*  */
         }
     }
 }

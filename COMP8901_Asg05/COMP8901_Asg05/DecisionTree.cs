@@ -17,7 +17,7 @@
 /*========================================================================================
 	Dependencies
 ========================================================================================*/
-
+using SysGeneric = System.Collections.Generic;
 
 /*========================================================================================
     DecisionTree
@@ -39,6 +39,7 @@ namespace COMP8901_Asg05
             Instance Properties
         ------------------------------------------------------------------------------------*/
         public DecisionTreeNode _root { get; set; }
+        public SysGeneric.Dictionary<string, string> _splitConditions { get; set; }
 
         /*------------------------------------------------------------------------------------
             Constructors & Destructors
@@ -59,7 +60,7 @@ namespace COMP8901_Asg05
             _root = newRoot;
             _root._tree = this;
             _root._parent = null;
-            _root._parentSplitCondition = new System.Collections.Generic.KeyValuePair<string, string>("", "");
+            _root._pastSplitConditions = new SysGeneric.Dictionary<string, string>();
         }
 
         /*------------------------------------------------------------------------------------
