@@ -39,6 +39,7 @@ namespace COMP8901_Asg05
         public string _name { get; set; }
         public string _classification { get; set; }
         public SysGeneric.Dictionary<string, string> _attributes { get; set; }
+        public string _predictedClassification { get; set; }
 
         /*------------------------------------------------------------------------------------
             Constructors & Destructors
@@ -56,6 +57,8 @@ namespace COMP8901_Asg05
             {
                 _attributes.Add(eachAttribute, "");
             }
+
+            _predictedClassification = null;
         }
 
         /*------------------------------------------------------------------------------------

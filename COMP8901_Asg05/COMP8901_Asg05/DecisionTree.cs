@@ -117,13 +117,28 @@ namespace COMP8901_Asg05
                 }
 
                 /* Determine the next attribute to branch on and get the value for this individual. */
-
+                string nextAttribute = currentNode._childrenSplitCondition;
+                string nextAttributeValue = individual._attributes[nextAttribute];
 
                 /* Determine which child node to branch into. */
-
+                foreach ( DecisionTreeNode eachChild in currentNode._children )
+                {
+                    if ( eachChild._pastSplitConditions[nextAttribute].Equals(nextAttributeValue) )
+                    {
+                        currentNode = eachChild;
+                        break;
+                    }
+                }
             }
 
-            return classification;
+            if ( classification != null )
+            {
+                return classification;
+            }
+            else
+            {
+                throw new System.Exception("Could not classify an individual.");
+            }
         }
     }
 }

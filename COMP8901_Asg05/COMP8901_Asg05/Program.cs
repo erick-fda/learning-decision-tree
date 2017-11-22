@@ -43,9 +43,10 @@ namespace COMP8901_Asg05
         public static SysGeneric.List<string> _attributes { get; set; }
         public static SysGeneric.Dictionary<string, SysGeneric.List<string>> _attributeValues { get; set; }
         private static SysGeneric.List<Individual> _trainingData { get; set; }
-        private static SysGeneric.Dictionary<Individual, string> _testData { get; set; }
+        private static SysGeneric.List<Individual> _testData { get; set; }
         private static DecisionTree _learnedTree { get; set; }
         public static string _commonClassification { get; private set; }
+        private static SysGeneric.List<Individual> _errorList { get; set; }
 
         /*--------------------------------------------------------------------------------
             Main Method
@@ -56,6 +57,7 @@ namespace COMP8901_Asg05
             ReadArgs(args);
             BuildDecisionTree(_trainingData);
             ClassifyTestData();
+            ReportErrors();
 
             SysConsole.Write("Press any key to exit...");
             SysConsole.ReadKey();
@@ -72,6 +74,8 @@ namespace COMP8901_Asg05
             _classifications = new SysGeneric.List<string>();
             _attributes = new SysGeneric.List<string>();
             _attributeValues = new SysGeneric.Dictionary<string, SysGeneric.List<string>>();
+            _testData = new SysGeneric.List<Individual>();
+            _errorList = new SysGeneric.List<Individual>();
         }
 
         /**
@@ -109,11 +113,7 @@ namespace COMP8901_Asg05
 
             /* Get the data from the test file. */
             SysConsole.Write(System.String.Format("{0}\n\tReading Testing File\n{0}\n", FileReader.HORIZONTAL_RULE));
-            SysGeneric.List<Individual> testList = FileReader.ReadDataFile(_testFilePath);
-            foreach ( Individual eachIndividual in testList )
-            {
-                _testData.Add(eachIndividual, "");
-            }
+            _testData = FileReader.ReadDataFile(_testFilePath);
         }
 
         /**
@@ -140,9 +140,45 @@ namespace COMP8901_Asg05
         */
         private static void ClassifyTestData()
         {
-            foreach ( Individual eachIndividual in _testData.Keys )
-            {
+            SysConsole.Write(System.String.Format("{0}\n\tClassifying Test Data\n{0}\n", FileReader.HORIZONTAL_RULE));
 
+            foreach ( Individual eachIndividual in _testData )
+            {
+                eachIndividual._predictedClassification = _learnedTree.PredictClassfication(eachIndividual);
+            }
+        }
+
+        /**
+            Report any error cases when classifing test data.
+        */
+        private static void ReportErrors()
+        {
+            SysConsole.Write(System.String.Format("{0}\n\tReporting Errors\n{0}\n", FileReader.HORIZONTAL_RULE));
+
+            /* Get the total number and rate of errors. */
+            foreach ( Individual eachIndividual in _testData )
+            {
+                if ( !eachIndividual._classification.Equals(eachIndividual._predictedClassification) )
+                {
+                    _errorList.Add(eachIndividual);
+                }
+            }
+
+            SysConsole.Write(System.String.Format(
+                "The total number of classification errors was {0}.\n\n",
+                _errorList.Count));
+
+            SysConsole.Write(System.String.Format(
+                "The error rate was {0}.\n\n",
+                (double) _errorList.Count / _testData.Count));
+
+            SysConsole.Write("Error Cases: \nIndividual\tIncorrect Classification\tCorrect Classification\n");
+
+            foreach (Individual eachIndividual in _errorList)
+            {
+                SysConsole.Write(System.String.Format(
+                    "{0}\t\t{1}\t\t{2}\n",
+                    eachIndividual._name, eachIndividual._predictedClassification, eachIndividual._classification));
             }
         }
     }
