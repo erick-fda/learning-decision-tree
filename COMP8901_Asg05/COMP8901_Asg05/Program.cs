@@ -43,8 +43,9 @@ namespace COMP8901_Asg05
         public static SysGeneric.List<string> _attributes { get; set; }
         public static SysGeneric.Dictionary<string, SysGeneric.List<string>> _attributeValues { get; set; }
         private static SysGeneric.List<Individual> _trainingData { get; set; }
-        private static SysGeneric.List<Individual> _testData { get; set; }
+        private static SysGeneric.Dictionary<Individual, string> _testData { get; set; }
         private static DecisionTree _learnedTree { get; set; }
+        public static string _commonClassification { get; private set; }
 
         /*--------------------------------------------------------------------------------
             Main Method
@@ -54,6 +55,7 @@ namespace COMP8901_Asg05
             Init();
             ReadArgs(args);
             BuildDecisionTree(_trainingData);
+            ClassifyTestData();
 
             SysConsole.Write("Press any key to exit...");
             SysConsole.ReadKey();
@@ -85,11 +87,33 @@ namespace COMP8901_Asg05
             _trainingFilePath = args[0];
             _testFilePath = args[1];
 
-            /* Get the data from the training and test files. */
+            /* Get the data from the training file. */
             SysConsole.Write(System.String.Format("{0}\n\tReading Training File\n{0}\n", FileReader.HORIZONTAL_RULE));
             _trainingData = FileReader.ReadDataFile(_trainingFilePath);
+
+            int nPositive = 0;
+            int nNegative = 0;
+            foreach ( Individual eachIndividual in _trainingData )
+            {
+                if ( eachIndividual._classification.Equals(_classifications[0]) )
+                {
+                    nPositive++;
+                }
+                else
+                {
+                    nNegative++;
+                }
+            }
+
+            _commonClassification = (nPositive >= nNegative) ? _classifications[0] : _classifications[1];
+
+            /* Get the data from the test file. */
             SysConsole.Write(System.String.Format("{0}\n\tReading Testing File\n{0}\n", FileReader.HORIZONTAL_RULE));
-            _testData = FileReader.ReadDataFile(_testFilePath);
+            SysGeneric.List<Individual> testList = FileReader.ReadDataFile(_testFilePath);
+            foreach ( Individual eachIndividual in testList )
+            {
+                _testData.Add(eachIndividual, "");
+            }
         }
 
         /**
@@ -104,33 +128,22 @@ namespace COMP8901_Asg05
             DecisionTreeNode rootNode = new DecisionTreeNode(root);
             _learnedTree = new DecisionTree(rootNode);
 
+            SysConsole.Write(System.String.Format("The most common classification is {0}.\n\n", _commonClassification));
             SysConsole.Write(System.String.Format("The entropy of the root node is {0}.\n\n", _learnedTree._root._entropy));
-
-            //string bestSplitAttribute = _learnedTree._root.DetermineBestSplitCondition();
-
-            //SysConsole.Write(System.String.Format(
-            //    "The best attribute to split on first is {0}.\n\n", 
-            //    bestSplitAttribute));
-            //SysConsole.Write(System.String.Format(
-            //    "The expected information gain from splitting on {0} is {1}.\n\n",
-            //    bestSplitAttribute,
-            //    _learnedTree._root.ExpectedUtilityFromSplit(bestSplitAttribute)));
-            //SysConsole.Write(System.String.Format(
-            //    "The tree's root node currently has {0} children.\n\n",
-            //    _learnedTree._root._children.Count));
-            //SysConsole.Write(System.String.Format(
-            //    "Splitting the tree's root node on attribute \"{0}\"...\n\n",
-            //    bestSplitAttribute));
-
-            //_learnedTree._root.SplitOnBestAttribute();
-
-            //SysConsole.Write(System.String.Format(
-            //    "The tree's root node currently has {0} children split on attribute {1}.\n\n",
-            //    _learnedTree._root._children.Count, 
-            //    _learnedTree._root._childrenSplitCondition));
 
             /* Generate the optimal decision tree from the training data. */
             _learnedTree.GenerateOptimalTree();
+        }
+
+        /**
+            Classifies the test data based on the tree generated from the training data.
+        */
+        private static void ClassifyTestData()
+        {
+            foreach ( Individual eachIndividual in _testData.Keys )
+            {
+
+            }
         }
     }
 }
