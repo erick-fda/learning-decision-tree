@@ -399,8 +399,9 @@ namespace COMP8901_Asg05
             if ( IsLeafNode() )
             {
                 SysConsole.Write(System.String.Format(
-                    "A leaf node has entropy {0} after splitting on the following attributes:\n",
-                    _entropy));
+                    "Leaf node determined that individuals with the following attributes have a \n" + 
+                    "{0} probability of having classification \"{1}\":\n",
+                    _classificationRatio, COMP8901_Asg05._classifications[0]));
 
                 foreach ( SysGeneric.KeyValuePair<string, string> eachSplit in _pastSplitConditions)
                 {
