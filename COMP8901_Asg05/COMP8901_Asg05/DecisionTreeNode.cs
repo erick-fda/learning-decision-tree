@@ -17,6 +17,7 @@
 	Dependencies
 ========================================================================================*/
 using SysGeneric = System.Collections.Generic;
+using SysConsole = System.Console;
 
 /*========================================================================================
 	Dependencies
@@ -107,8 +108,8 @@ namespace COMP8901_Asg05
         */
         private static double CalculateEntropy(SysGeneric.List<Individual> collection)
         {
-            /* If the collection has no members or is null, entropy is zero. */
-            if (collection.Count < 1 ||
+            /* If the collection has less than 2 members or is null, entropy is zero. */
+            if (collection.Count < 2 ||
                 collection == null)
             {
                 return 0;
@@ -150,6 +151,13 @@ namespace COMP8901_Asg05
         */
         private static double Entropy(double nPositive, double nNegative)
         {
+            /* If either of the given values is zero, entropy is zero. */
+            if (nPositive <= 0 || 
+                nNegative <= 0)
+            {
+                return 0;
+            }
+
             double n = nPositive + nNegative;
             double nPosN = nPositive / n;
             double nNegN = nNegative / n;
@@ -220,7 +228,7 @@ namespace COMP8901_Asg05
             /* Calculate the information gain of splitting on each attribute 
                 and keep the best one. */
             string bestAttribute = null;
-            double bestAttributeUtility = 0;
+            double bestAttributeUtility = -1;
 
             foreach (string eachAttribute in attributesToTest)
             {
@@ -288,6 +296,12 @@ namespace COMP8901_Asg05
             _childrenSplitCondition = splitCondition;
             positiveChild._pastSplitConditions.Add(splitCondition, positiveSplitValue);
             negativeChild._pastSplitConditions.Add(splitCondition, COMP8901_Asg05._attributeValues[splitCondition][1]);
+
+            /* Update entropies and classification ratios for children. */
+            positiveChild._entropy = positiveChild.CalculateEntropy();
+            positiveChild._classificationRatio = positiveChild.CalculateClassificationRatio();
+            negativeChild._entropy = negativeChild.CalculateEntropy();
+            negativeChild._classificationRatio = negativeChild.CalculateClassificationRatio();
         }
 
         /**
@@ -384,11 +398,30 @@ namespace COMP8901_Asg05
             /* If this is a leaf node, we're done building this branch. */
             if ( IsLeafNode() )
             {
+                SysConsole.Write(System.String.Format(
+                    "A leaf node has entropy {0} after splitting on the following attributes:\n",
+                    _entropy));
+
+                foreach ( SysGeneric.KeyValuePair<string, string> eachSplit in _pastSplitConditions)
+                {
+                    SysConsole.Write(System.String.Format(
+                        "\t{0} : {1}\n",
+                        eachSplit.Key, eachSplit.Value));
+                }
+
+                SysConsole.Write("\n");
+
                 return;
             }
 
             /* If this is not a leaf node, split it on its best attribute. */
+            SplitOnBestAttribute();
 
+            /* Split down on each of this node's children. */
+            foreach ( DecisionTreeNode eachChild in _children )
+            {
+                eachChild.SplitDown();
+            }
         }
     }
 }

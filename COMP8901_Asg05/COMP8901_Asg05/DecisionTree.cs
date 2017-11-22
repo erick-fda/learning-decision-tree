@@ -73,7 +73,12 @@ namespace COMP8901_Asg05
         */
         public void GenerateOptimalTree()
         {
-            
+            if ( _root == null )
+            {
+                throw new System.Exception("Root node is null.");
+            }
+
+            _root.SplitDown();
         }
     }
 }

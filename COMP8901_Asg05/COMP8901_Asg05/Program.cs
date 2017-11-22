@@ -106,30 +106,31 @@ namespace COMP8901_Asg05
 
             SysConsole.Write(System.String.Format("The entropy of the root node is {0}.\n\n", _learnedTree._root._entropy));
 
-            string bestSplitAttribute = _learnedTree._root.DetermineBestSplitCondition();
+            //string bestSplitAttribute = _learnedTree._root.DetermineBestSplitCondition();
 
-            SysConsole.Write(System.String.Format(
-                "The best attribute to split on first is {0}.\n\n", 
-                bestSplitAttribute));
-            SysConsole.Write(System.String.Format(
-                "The expected information gain from splitting on {0} is {1}.\n\n",
-                bestSplitAttribute,
-                _learnedTree._root.ExpectedUtilityFromSplit(bestSplitAttribute)));
-            SysConsole.Write(System.String.Format(
-                "The tree's root node currently has {0} children.\n\n",
-                _learnedTree._root._children.Count));
-            SysConsole.Write(System.String.Format(
-                "Splitting the tree's root node on attribute \"{0}\"...\n\n",
-                bestSplitAttribute));
+            //SysConsole.Write(System.String.Format(
+            //    "The best attribute to split on first is {0}.\n\n", 
+            //    bestSplitAttribute));
+            //SysConsole.Write(System.String.Format(
+            //    "The expected information gain from splitting on {0} is {1}.\n\n",
+            //    bestSplitAttribute,
+            //    _learnedTree._root.ExpectedUtilityFromSplit(bestSplitAttribute)));
+            //SysConsole.Write(System.String.Format(
+            //    "The tree's root node currently has {0} children.\n\n",
+            //    _learnedTree._root._children.Count));
+            //SysConsole.Write(System.String.Format(
+            //    "Splitting the tree's root node on attribute \"{0}\"...\n\n",
+            //    bestSplitAttribute));
 
-            _learnedTree._root.SplitOnBestAttribute();
+            //_learnedTree._root.SplitOnBestAttribute();
 
-            SysConsole.Write(System.String.Format(
-                "The tree's root node currently has {0} children split on attribute {1}.\n\n",
-                _learnedTree._root._children.Count, 
-                _learnedTree._root._childrenSplitCondition));
+            //SysConsole.Write(System.String.Format(
+            //    "The tree's root node currently has {0} children split on attribute {1}.\n\n",
+            //    _learnedTree._root._children.Count, 
+            //    _learnedTree._root._childrenSplitCondition));
 
-            /*  */
+            /* Generate the optimal decision tree from the training data. */
+            _learnedTree.GenerateOptimalTree();
         }
     }
 }
