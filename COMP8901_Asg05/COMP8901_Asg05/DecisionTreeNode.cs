@@ -24,8 +24,7 @@ using SysGeneric = System.Collections.Generic;
 public enum DtnSplitResult
 {
     Split,
-    ReachedLeafNode, 
-    CouldNotSplit
+    ReachedLeafNode
 }
 
 /*========================================================================================
@@ -50,11 +49,12 @@ namespace COMP8901_Asg05
         {
             get { return _pIndividuals; }
 
-            /* Update entropy when setting individuals. */
+            /* Update entropy and classification ratio when setting individuals. */
             set
             {
                 _pIndividuals = value;
                 _entropy = CalculateEntropy();
+                _classificationRatio = CalculateClassificationRatio();
             }
         }
 
@@ -64,6 +64,7 @@ namespace COMP8901_Asg05
         public string _childrenSplitCondition { get; set; }
         public double _entropy { get; private set; }
         public SysGeneric.Dictionary<string, string> _pastSplitConditions { get; set; }
+        public double _classificationRatio { get; set; }
 
         /*------------------------------------------------------------------------------------
             Constructors & Destructors
@@ -295,14 +296,8 @@ namespace COMP8901_Asg05
         */
         public DtnSplitResult SplitOnBestAttribute()
         {
-            /* If all attributes have already been split on, this is a leaf node. */
-            if ( _pastSplitConditions.Count >= COMP8901_Asg05._attributes.Count )
-            {
-                return DtnSplitResult.ReachedLeafNode;
-            }
-
-            /* If the entropy of this node is zero, it is a leaf node. */
-            if ( _entropy <= 0 )
+            /* If this is a leaf node, return without splitting. */
+            if ( IsLeafNode() )
             {
                 return DtnSplitResult.ReachedLeafNode;
             }
@@ -313,6 +308,87 @@ namespace COMP8901_Asg05
             /* Split on the best attribute. */
             SplitOnAttribute(bestAttribute);
             return DtnSplitResult.Split;
+        }
+
+        /**
+            Returns whether this node is a leaf node.
+            A node is a leaf node if its branch has been split on every possible attribute 
+            or if its entropy is zero.
+        */
+        public bool IsLeafNode()
+        {
+            if ( _pastSplitConditions.Count >= COMP8901_Asg05._attributes.Count || 
+                _entropy <= 0 )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+            Returns the classification ratio for a given list of Individuals.
+            
+            The classification ratio indicates the fraction of individuals in the given 
+            list who fall into the first classification defined in the classification 
+            source.
+
+            If the given list is empty or null, this method returns a negative number.
+        */
+        public static double CalculateClassificationRatio(SysGeneric.List<Individual> collection)
+        {
+            /* If the collection has no members or is null, classification ratio is negative. */
+            if (collection.Count < 1 ||
+                collection == null)
+            {
+                return -1;
+            }
+
+            double nPositive = 0;
+
+            foreach ( Individual eachIndividual in collection )
+            {
+                if ( eachIndividual._classification.Equals(COMP8901_Asg05._classifications[0]) )
+                {
+                    nPositive++;
+                }
+            }
+
+            return nPositive / collection.Count;
+        }
+
+        /**
+            Returns the classification ratio for the list of individuals contained by this node.
+
+            This method should be used to update the node's classification ratio every time 
+            this node's list of individuals changes.
+        */
+        public double CalculateClassificationRatio()
+        {
+            return CalculateClassificationRatio(_individuals);
+        }
+
+        /**
+            Splits this node and its resulting descendants on their most utile attributes 
+            recursively until each resulting child branch has met at least one of the 
+            following conditions:
+            
+            - The branch has been split on every possible attribute.
+            - The branch's leaf node has an entropy of zero.
+
+            At that point, the complete optimal tree from the branch this method was 
+            originally called on down will have been generated.
+        */
+        public void SplitDown()
+        {
+            /* If this is a leaf node, we're done building this branch. */
+            if ( IsLeafNode() )
+            {
+                return;
+            }
+
+            /* If this is not a leaf node, split it on its best attribute. */
+
         }
     }
 }

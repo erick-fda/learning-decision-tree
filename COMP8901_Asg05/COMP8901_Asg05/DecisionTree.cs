@@ -73,7 +73,7 @@ namespace COMP8901_Asg05
         */
         public void GenerateOptimalTree()
         {
-
+            
         }
     }
 }
