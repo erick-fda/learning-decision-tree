@@ -141,5 +141,13 @@ namespace COMP8901_Asg05
                 throw new System.Exception("Could not classify an individual.");
             }
         }
+
+        /**
+            Prints a visual representation of the tree.
+        */
+        public void Print()
+        {
+            _root.PrintSubtree("");
+        }
     }
 }

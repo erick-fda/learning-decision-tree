@@ -133,6 +133,10 @@ namespace COMP8901_Asg05
 
             /* Generate the optimal decision tree from the training data. */
             _learnedTree.GenerateOptimalTree();
+
+            SysConsole.Write(System.String.Format("{0}\n\tLearned Decision Tree\n{0}\n", FileReader.HORIZONTAL_RULE));
+            _learnedTree.Print();
+            SysConsole.Write("\n");
         }
 
         /**
@@ -182,6 +186,8 @@ namespace COMP8901_Asg05
                 //    "{0}\t\t{1}\t\t{2}\n",
                 //    eachIndividual._name, eachIndividual._predictedClassification, eachIndividual._classification));
             }
+
+            SysConsole.Write("\n");
         }
     }
 }

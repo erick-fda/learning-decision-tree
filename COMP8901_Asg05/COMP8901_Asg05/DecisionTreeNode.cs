@@ -398,19 +398,19 @@ namespace COMP8901_Asg05
             /* If this is a leaf node, we're done building this branch. */
             if ( IsLeafNode() )
             {
-                SysConsole.Write(System.String.Format(
-                    "Leaf node determined that individuals with the following attributes have a \n" + 
-                    "{0} probability of having classification \"{1}\":\n",
-                    _classificationRatio, COMP8901_Asg05._classifications[0]));
+                //SysConsole.Write(System.String.Format(
+                //    "Leaf node determined that individuals with the following attributes have a \n" + 
+                //    "{0} probability of having classification \"{1}\":\n",
+                //    _classificationRatio, COMP8901_Asg05._classifications[0]));
 
-                foreach ( SysGeneric.KeyValuePair<string, string> eachSplit in _pastSplitConditions)
-                {
-                    SysConsole.Write(System.String.Format(
-                        "\t{0} : {1}\n",
-                        eachSplit.Key, eachSplit.Value));
-                }
+                //foreach ( SysGeneric.KeyValuePair<string, string> eachSplit in _pastSplitConditions)
+                //{
+                //    SysConsole.Write(System.String.Format(
+                //        "\t{0} : {1}\n",
+                //        eachSplit.Key, eachSplit.Value));
+                //}
 
-                SysConsole.Write("\n");
+                //SysConsole.Write("\n");
 
                 return;
             }
@@ -422,6 +422,51 @@ namespace COMP8901_Asg05
             foreach ( DecisionTreeNode eachChild in _children )
             {
                 eachChild.SplitDown();
+            }
+        }
+
+        /**
+            Prints the subtree which has this node as the root.
+            If this is called on the root node of a tree, it has the effect of printing the tree.
+        */
+        public void PrintSubtree(string indent)
+        {
+            SysConsole.Write(indent);
+
+            /* If this is a leaf node, return after printing. */
+            if (IsLeafNode())
+            {
+                string classification = ( _classificationRatio < 0 ) ? 
+                                            "NO SAMPLE DATA" : 
+                                            ( _classificationRatio >= 0.5 ) ? 
+                                                COMP8901_Asg05._classifications[0].ToUpper() : 
+                                                COMP8901_Asg05._classifications[1].ToUpper();
+
+                SysConsole.Write(System.String.Format(
+                    "> {0} : {1}\n{2}   = {3}\n", 
+                    _parent._childrenSplitCondition, 
+                    _pastSplitConditions[_parent._childrenSplitCondition], 
+                    indent,
+                    classification));
+                return;
+            }
+            
+            /* If this isn't a leaf node, print its children. */
+            if (_parent == null)
+            {
+                SysConsole.Write("root\n");
+            }
+            else
+            {
+                SysConsole.Write(System.String.Format("> {0} : {1}\n", _parent._childrenSplitCondition, _pastSplitConditions[_parent._childrenSplitCondition]));
+            }
+
+
+            indent += "     ";
+            
+            foreach ( DecisionTreeNode eachChild in _children )
+            {
+                eachChild.PrintSubtree(indent);
             }
         }
     }
