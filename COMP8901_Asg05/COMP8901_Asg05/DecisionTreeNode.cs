@@ -398,6 +398,13 @@ namespace COMP8901_Asg05
             /* If this is a leaf node, we're done building this branch. */
             if ( IsLeafNode() )
             {
+                /* If there were no examples in the training set for this combination of attributes, 
+                    inherit the classification ratio of the parent node. */
+                if (_classificationRatio < 0)
+                {
+                    _classificationRatio = _parent._classificationRatio;
+                }
+
                 //SysConsole.Write(System.String.Format(
                 //    "Leaf node determined that individuals with the following attributes have a \n" + 
                 //    "{0} probability of having classification \"{1}\":\n",
